@@ -6,8 +6,10 @@ class MVVM {
     
     // if the template exits, I want to do something fancy
     if (this.$el) {
+      new Observer(this.$data);
       // This is a template engine
       new Compile(this.$el, this);
+
     }
   }
 }
