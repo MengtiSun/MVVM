@@ -79,6 +79,15 @@ CompileUtil = {
   text(node, vm, expr) {
     let updateFn = this.updater["textUpdater"];
     let value = this.getTextVal(vm, expr);
+    // replace the variables in expr with Watcher
+    expr.replace(/\{\{([^}]+)\}\}/g, (matchedStr, strFound) => {
+      new Watcher(vm, strFound, (newValue)=>{
+        // update the content in the node with data in vm.$data
+        // this is called when data is changed, then we need to change the view
+        // this "expr" is still using {{ message.txt }}, not watcher
+        updateFn && updateFn(node, this.getTextVal(vm, expr));
+      });
+    })
     updateFn && updateFn(node, value);
   },
   getTextVal(vm, expr) {
@@ -93,9 +102,25 @@ CompileUtil = {
       return prev[next];
     }, vm.$data)
   },
+  setVal(vm, expr, value) {
+    expr = expr.split(".");
+    return expr.reduce((prev, next, currentIndex)=> {
+      if (currentIndex === expr.length - 1) {
+        return prev[next] = value;
+      }
+      return prev[next];
+    }, vm.$data)
+  },
   model(node, vm, expr) {
     let updateFn = this.updater["modelUpdater"];
-
+    new Watcher(vm, expr, (newValue)=> {
+      // update the value in the node with newValue
+      updateFn && updateFn(node, newValue);
+    });
+    node.addEventListener('input', (e)=> {
+      let newValue = e.target.value;
+      this.setVal(vm, expr, newValue);
+    })
     updateFn && updateFn(node, this.getVal(vm, expr));
   },
   updater: {

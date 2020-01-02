@@ -9,7 +9,6 @@ class MVVM {
       new Observer(this.$data);
       // This is a template engine
       new Compile(this.$el, this);
-
     }
   }
 }
