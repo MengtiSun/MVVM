@@ -8,10 +8,20 @@
     <div id="app">
       <input type="text" v-model="message.txt">
       <div>The text of message is:</div>
-      <div>{{message.txt}} {{anotherTxt}}</div>
+      {{message.txt}} {{anotherTxt}}
     </div>
+    <script src="./js/MVVM.js"></script>
+    <script src="./js/compile.js"></script>
     <script>
-      let vm = new Object();
+      let vm = new MVVM({
+        el: "#app",
+        data: {
+          message: {
+            txt: "Say something?"
+          },
+          anotherTxt: "I don't know what to say."
+        }
+      });
     </script>
   </body>
 </html>
